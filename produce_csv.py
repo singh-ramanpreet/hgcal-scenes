@@ -164,6 +164,12 @@ def run_sim(
             sipm_base_temp    = 30 # -30
             sipm_base_fluence = 2.1e12
             sipm_base_area    = 2
+
+        if sipmscen == 51:
+            sipm_base_noise   = math.sqrt(15.6e9*15e-9) # 15um 15.6 GHz at -30, 2mm2 device at 2.1e12, 2V OV
+            sipm_base_temp    = 30 # -30
+            sipm_base_fluence = 5e13
+            sipm_base_area    = 2
         
         if sipmscen == 6:
             sipm_base_noise   = math.sqrt(150e6*15e-9) # HE 150 MHz at -30, 2mm2 device at 2.1e12, 2V OV
@@ -217,10 +223,75 @@ def run_sim(
             dose_constant = 6.0 * pow(drate, 0.5) * 1e6
             return math.exp(-d / dose_constant)
 
+    # -----------------
+    board_map = {"layer 9": (18, "J8", "K4"),
+                 "layer 10": (18, "J8", "K6"),
+                 "layer 11": (18, "J8", "K7"),
+                 "layer 12": (18, "J8", "K8"),
+                 "layer 13": (13, "C5", "D8", "E8", "G3"),
+                 "layer 14": (13, "C5", "D8", "E8", "G5"),
+                 "layer 15": (6, "B12", "D8", "E8", "G7"),
+                 "layer 16": (6, "B12", "D8", "E8", "G8"),
+                 "layer 17": (6, "B12", "D8", "E8", "G8"),
+                 "layer 18": (6, "B12", "D8", "E8", "G8"),
+                 "layer 19": (0, "A6", "B12", "D8", "E8", "G8"),
+                 "layer 20": (0, "A6", "B12", "D8", "E8", "G8"),
+                 "layer 21": (0, "A6", "B12", "D8", "E8", "G8"),
+                 "layer 22": (0, "A6", "B12", "D8", "E8", "G6")}
+
+    # -------------------
+    def tileboards_name(layer, ring):
+        expand_board_map = {}
+        for key in board_map:
+            initial_ring = board_map[key][0]
+            boards = {}
+            for i in board_map[key][1:]:
+                for j in range(initial_ring, initial_ring + int(i[1:])):
+                    boards[f"ring {j}"] = i
+                initial_ring = initial_ring + int(i[1:])
+            expand_board_map[key] = boards.copy()
+
+        layer_key = f"layer {layer}"
+        ring_key = f"ring {ring}"
+        if layer_key in expand_board_map and ring_key in expand_board_map[layer_key]:
+            return expand_board_map[layer_key][ring_key]
+        else:
+            return "NULL"
+
+    # -------
+    def tb_area():
+        tb_areas_ = {}
+        for key in board_map:
+            initial_ring = board_map[key][0]
+            for i in board_map[key][1:]:
+                area = 0.0
+                for j in range(initial_ring, initial_ring + int(i[1:])):
+                    area += cell_geometries[j]["area"]
+                initial_ring = initial_ring + int(i[1:])
+                tb_areas_[i] = area * 8.0
+        return tb_areas_
+
+    tileboards_area = tb_area()
+
+    # --------
+    def tb_bounds():
+        tb_bounds_ = {}
+        for key in board_map:
+            initial_ring = board_map[key][0]
+            for i in board_map[key][1:]:
+                for j in range(initial_ring, initial_ring + int(i[1:])):
+                    r1 = cell_geometries[initial_ring]["inner"]
+                    r2 = cell_geometries[j]["outer"]
+                initial_ring = initial_ring + int(i[1:])
+                tb_bounds_[i] = (r1, r2)
+        return tb_bounds_
+
+    tileboards_bounds = tb_bounds()
 
     dframe = {"layer": [], "ring": [], "center (mm)": [], "area (cm2)": [], "mipsig": [], "sipm_noise": [], 
               "S/N": [], "power (mW)": [], "fluence": [], "dose (kRad)": [], "outer": [], "inner": [], 
-              "sipm_area": [], "nring": [], "radiation_loss": []}
+              "sipm_area": [], "nring": [], "radiation_loss": [], "tileboard_name": [], "tileboard_area": [],
+              "tileboard_rin": [], "tileboard_rout": []}
     
     total_sipms = 0
     big_sipms   = 0
@@ -251,10 +322,15 @@ def run_sim(
             
             SN_ratio = signal / sipm_noise(layer, iring)
 
+            tileboard = tileboards_name(layer, iring)
+            if tileboard == "NULL":
+                print(ring, layer, SN_ratio)
+                continue
+
             dframe["layer"         ].append(layer                                     )
             dframe["ring"          ].append(f"{ringcode}{ring:02d}"                   )
             dframe["center (mm)"   ].append(f"{center:.2f}"                           )
-            dframe["area (cm2)"    ].append(f"{(cell_area(iring)/100):.3f}"          )
+            dframe["area (cm2)"    ].append(f"{(cell_area(iring)/100):.3f}"           )
             dframe["mipsig"        ].append(f"{signal:.3f}"                           )
             dframe["sipm_noise"    ].append(f"{sipm_noise(layer, iring):.3f}"         )
             dframe["S/N"           ].append(f"{SN_ratio:.2f}"                         )
@@ -266,12 +342,16 @@ def run_sim(
             dframe["sipm_area"     ].append(sipm_area                                 )
             dframe["nring"         ].append(ring_sipms                                )
             dframe["radiation_loss"].append(radiation_loss(layer, center)             )
-    
+            dframe["tileboard_name"].append(tileboard                                 )
+            dframe["tileboard_area"].append(f"{tileboards_area[tileboard]:.3f}"       )
+            dframe["tileboard_rin" ].append(f"{tileboards_bounds[tileboard][0]:.3f}"  )
+            dframe["tileboard_rout"].append(f"{tileboards_bounds[tileboard][1]:.3f}"  )
+
     return dframe
 
 
 if __name__ == "__main__":
-    dframe = run_sim(
+    dframe_test = run_sim(
         lumi=3000,
         radscen=3,
         sipmscen=5,
@@ -280,42 +360,45 @@ if __name__ == "__main__":
         pde_ov_corr=34.3,
         sipm_area=4
     )
-    print(pd.DataFrame(dframe))
+    print(pd.DataFrame(dframe_test))
+
+    out_dir = "csv_output"
+    os.makedirs(out_dir, exist_ok=True)
+
+    run_for = []
+    # jun 19 testbeam result
+    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
+    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
+    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    # jan 20 testbeam result + updated Noise
+    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    # jan 20 testbeam result + updated Noise + updated Rad Damage
+    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
 
 
-# out_dir = "csv_output"
-# os.makedirs(out_dir, exist_ok=True)
+    for i in run_for:
+        radscen = i["radscen"]
+        mip = i["mip"]
+        pde_base = i["pde_base"]
+        pde_corr = i["pde_corr"]
+        sipmscen = i["sipmscen"]
+        sipm_area = i["sipm_area"]
 
-# radiation_scene = 3
-
-# for mip in [48, 38, 24]:
-#
-#    pde_base = 40.0
-#
-#    for pde_corr in [14.4, 18.37, 34.5]:
-#
-#        if pde_corr == 18.37:
-#            sipmscen = 6 # HE
-#
-#        if pde_corr == 14.4:
-#            sipmscen = 4 # 10um
-#
-#        if pde_corr == 34.5:
-#            sipmscen = 5 # 15um
-#
-#        for sipm_area in [2.0, 4.0, 9.0]:
-#
-#            outFileName = f"mip_{mip}_pde_ratio_{pde_corr}_{pde_base}_sipm_area_{sipm_area}.csv"
-#            print(outFileName)
-#            dframe = run_sim(
-#                lumi=3000,
-#                radscen=radiation_scene,
-#                sipmscen=sipmscen,
-#                mip_pe=mip,
-#                pde_ov_base=pde_base,
-#                pde_ov_corr=pde_corr,
-#                sipm_area=sipm_area
-#            )
-#            df = pd.DataFrame(dframe)
-#            df = df[list(dframe.keys())]
-#            df.to_csv(f"{out_dir}/{outFileName}")
+        outFileName = f"mip_{mip}_pdeC_{pde_corr}_{pde_base}_sipmA_{sipm_area}_rad_{radscen}_sipmN_{sipmscen}.csv"
+        print(outFileName)
+        dframe = run_sim(
+            lumi=3000,
+            radscen=radscen,
+            sipmscen=sipmscen,
+            mip_pe=mip,
+            pde_ov_base=pde_base,
+            pde_ov_corr=pde_corr,
+            sipm_area=sipm_area
+        )
+        df = pd.DataFrame(dframe)
+        df = df[list(dframe.keys())]
+        df.to_csv(f"{out_dir}/{outFileName}")
