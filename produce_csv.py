@@ -1,34 +1,26 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-import sys
-sys.path.append("hgcal-scint-tools/performance")
-
-from ec_radiation  import fluence
-from ec_radiation  import dose
-from ec_dimensions import r_inner
-from ec_dimensions import r_outer, r_scint
+#!/usr/bin/env python3
 
 import os
 import math
 import pandas as pd
+import sys
+sys.path.append("hgcal-scint-tools/performance")
 
-
-# In[11]:
+from ec_radiation import fluence
+from ec_radiation import dose
+from ec_dimensions import r_inner
+from ec_dimensions import r_outer, r_scint
 
 
 def run_sim(
-        lumi=3000,
-        radscen=3,
-        sipmscen=2,
-        mip_pe=40,
-        pde_ov_base=40.0,
-        pde_ov_corr=34.3,
-        sipm_area=2.0
-        ):
+    lumi=3000,
+    radscen=3,
+    sipmscen=2,
+    mip_pe=40,
+    pde_ov_base=40.0,
+    pde_ov_corr=34.3,
+    sipm_area=2.0
+):
     """
     lumi -> Integrated luminosity in /fb
     radscen -> Scintillator radiation damage scenario, see code for details
@@ -46,68 +38,106 @@ def run_sim(
     dphi_degrees = 1.25
     dphi = math.radians(dphi_degrees)
 
-    fixed_point = 1049
-    fluence_limit = 5e13
-
-    si_boundary = [
-        1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 
-        1374, 1304, 1195, 1195, 1147, 1051,  902,  902,
-        902,  902,  902,  902,  902,  902,  902,  902,
-    ]
+    #fixed_point = 1049
+    fixed_point = 1554
+    r_outer_max = r_outer(21)
+    si_boundary_min = r_scint(21)
 
     # ---------
     def si_boundary_layer(layer):
         return r_scint(layer)
 
     # ----------
-    def generate_cell_centers(layer):
+    def generate_cell_data():
         centers = []
-        center  = fixed_point
-        hwidth  = math.tan(dphi / 2) * center
-
-        while (center < r_outer(layer)):
-            if (center > si_boundary_layer(layer)):
-                centers.append(center)
-            else:
-                centers.append(-1)
+        center = fixed_point
+        hwidth = math.tan(dphi / 2) * center
+        while (center + hwidth*0.5 < float(r_outer_max)):
+            centers.append(center)
             center = (1 + math.tan(dphi / 2)) / (1 - math.tan(dphi / 2)) * center
             hwidth = math.tan(dphi / 2) * center
 
-        return sorted(centers)
+        # inbound
+        center = fixed_point
+        while (center > si_boundary_min):
+            center = (1 - math.tan(dphi / 2)) / (1 + math.tan(dphi / 2)) * center
+            hwidth = math.tan(dphi / 2) * center
+            if (center + hwidth * 1.5 > r_outer_max): continue
+            if (center > si_boundary_min):
+                centers.append(center)
+        centers=sorted(centers)
+        # now, we redo this by determining the average sizes in pairs
+        cells=[]
+        for i in range(0, len(centers), 2):
+            nominal_even = math.tan(dphi / 2) * centers[i] # half width
+            nominal_odd = math.tan(dphi / 2) * centers[i+1] # half width
+            average_height = (nominal_even + nominal_odd) # average _height_ since no divide by two
+            # we keep the inner bound at the nominal position (arbitrary)
+            rinner_even = centers[i] - nominal_even
+            new_center_even = rinner_even + average_height * 0.5
+            width = math.tan(dphi / 2) * new_center_even * 2
+            cell_even={
+                "center" : new_center_even,
+                "ring" : i,
+                "inner" : rinner_even,
+                "outer" : rinner_even + average_height,
+                "width" : width,
+                "height" : average_height,
+                "area" : width * average_height
+            }
+            new_center_odd = rinner_even + average_height * 1.5
+            cell_odd={
+                "center" : new_center_odd,
+                "ring" : i + 1,
+                "inner" : rinner_even + average_height,
+                "outer" : rinner_even + average_height * 2,
+                "width" : width,
+                "height" : average_height,
+                "area" : width * average_height
+            }
+            cells.append(cell_even)
+            cells.append(cell_odd)
+        return cells
+
+    cell_geometries = generate_cell_data()
 
     # ----------
-    def cell_area(cell_center):
-        return (math.tan(dphi) * cell_center) ** 2
-    
+    def cell_area(ring):
+        return cell_geometries[ring]["area"]
+        # return (math.tan(dphi) * cell_center) ** 2
+
     # ----------
-    def cell_perimeter(cell_center):
-        return 4 * math.tan(dphi) * cell_center
-    
+    def cell_perimeter(ring):
+        return 2 * (cell_geometries[ring]["width"] + cell_geometries[ring]["height"])
+        # return 4 * math.tan(dphi) * cell_center
+
     # ----------
-    def cell_amplitude(cell_center):
-        
-        cell_area_      = cell_area(cell_center)
-        cell_perimeter_ = cell_perimeter(cell_center)
+    def cell_amplitude(ring):
+
+        cell_area_      = cell_area(ring)
+        #cell_perimeter_ = cell_perimeter(ring)
     
         pde_correction = pde_ov_corr / pde_ov_base
         
-        sipm_area_correction      = sipm_area   / (1.3*1.3)
+        sipm_area_correction      = sipm_area / (1.3*1.3)
         cell_area_correction      = math.sqrt(30*30) / math.sqrt(cell_area_)
-        cell_perimeter_correction = math.sqrt( 4*30) / math.sqrt(cell_perimeter_)
+        #cell_perimeter_correction = math.sqrt( 4*30) / math.sqrt(cell_perimeter_)
 
         return pde_correction * mip_pe * cell_area_correction * sipm_area_correction
     
     # ----------
-    def cell_bounds(cell_center):
-        rv = []
-        hwidth = math.tan(dphi / 2) * cell_center
-        rv.append(cell_center + hwidth)
-        rv.append(cell_center - hwidth)
+    def cell_bounds(ring):
+        return [cell_geometries[ring]["inner"],cell_geometries[ring]["outer"]]
 
-        return rv
+
+    def ring_in_layer(layer, ring):
+        if (cell_geometries[ring]["inner"] < si_boundary_layer(layer)): return False
+        if (cell_geometries[ring]["outer"] > r_outer(layer)): return False
+        return True
 
     # ----------
-    def sipm_noise(layer, cell_center):
+    def sipm_noise(layer, ring):
+        cell_center=cell_geometries[ring]["center"]
         shaping_time       = 15.0 # ns
         sipm_temp_constant = 1.88 # per 10 degrees
         sipm_temperature   = -30
@@ -150,7 +180,8 @@ def run_sim(
         return sipm_constant * math.sqrt(fluence(layer, cell_center) / sipm_base_fluence * lumi / 3000)
 
     # ----------
-    def sipm_power(layer, cell_center):
+    def sipm_power(layer, ring):
+        cell_center=cell_geometries[ring]["center"]
         sipm_base_current = 200e-6
         sipm_voltage = 62.0 # "HE"
         
@@ -200,34 +231,34 @@ def run_sim(
 
     for layer in range(irange, total_layers + 1):
 
-        centers = generate_cell_centers(layer)
-        i = -1
-
-        for center in centers:
-            i = i + 1
-            if (center < 0): continue
+        for iring in range(0, len(cell_geometries)):
+            if (not ring_in_layer(layer, iring)): continue
+            center = cell_geometries[iring]["center"]
+            cell_w = cell_geometries[iring]["width"]
+            cell_h = cell_geometries[iring]["height"]
+            #if (center < 0): continue
 
             ring_sipms = 2 * 360 / dphi_degrees
             total_sipms += ring_sipms
 
-            signal = cell_amplitude(center) * radiation_loss(layer, center)
-            edges  = cell_bounds(center)
+            signal = cell_amplitude(iring) * radiation_loss(layer, center)
+            edges  = cell_bounds(iring)
             if (sipm_area > 3.9):
                 big_sipms = big_sipms + 2 * 360 / dphi_degrees
 
-            ring = i
+            ring = iring
             ringcode = ""
             
-            SN_ratio = signal / sipm_noise(layer, center)
+            SN_ratio = signal / sipm_noise(layer, iring)
 
             dframe["layer"         ].append(layer                                     )
             dframe["ring"          ].append(f"{ringcode}{ring:02d}"                   )
             dframe["center (mm)"   ].append(f"{center:.2f}"                           )
-            dframe["area (cm2)"    ].append(f"{(cell_area(center)/100):.3f}"          )
+            dframe["area (cm2)"    ].append(f"{(cell_area(iring)/100):.3f}"          )
             dframe["mipsig"        ].append(f"{signal:.3f}"                           )
-            dframe["sipm_noise"    ].append(f"{sipm_noise(layer, center):.3f}"        )
+            dframe["sipm_noise"    ].append(f"{sipm_noise(layer, iring):.3f}"         )
             dframe["S/N"           ].append(f"{SN_ratio:.2f}"                         )
-            dframe["power (mW)"    ].append(f"{(sipm_power(layer,center) * 1000):.3f}")
+            dframe["power (mW)"    ].append(f"{(sipm_power(layer, iring) * 1000):.3f}")
             dframe["fluence"       ].append(fluence(layer, center) * lumi / 3000      )
             dframe["dose (kRad)"   ].append(dose(layer, center) * lumi / 3000 / 1000  )
             dframe["outer"         ].append(f"{edges[0]:.2f}"                         )
@@ -239,46 +270,41 @@ def run_sim(
     return dframe
 
 
-# In[12]:
+if __name__ == "__main__":
+    dframe = run_sim(
+        lumi=3000,
+        radscen=3,
+        sipmscen=5,
+        mip_pe=48,
+        pde_ov_base=40.0,
+        pde_ov_corr=34.3,
+        sipm_area=4
+    )
+    print(pd.DataFrame(dframe))
 
 
-dframe = run_sim(
-                lumi=3000,
-                radscen=3,
-                sipmscen=5,
-                mip_pe=48,
-                pde_ov_base=40.0,
-                pde_ov_corr=34.5,
-                sipm_area=4
-            )
-print(pd.DataFrame(dframe))
+# out_dir = "csv_output"
+# os.makedirs(out_dir, exist_ok=True)
 
+# radiation_scene = 3
 
-# In[4]:
-
-
-#out_dir = "csv_output"
-#os.makedirs(out_dir, exist_ok=True)
-
-#radiation_scene = 3
-
-#for mip in [48, 38, 24]:
-#    
+# for mip in [48, 38, 24]:
+#
 #    pde_base = 40.0
-#        
+#
 #    for pde_corr in [14.4, 18.37, 34.5]:
-#        
+#
 #        if pde_corr == 18.37:
 #            sipmscen = 6 # HE
-#            
+#
 #        if pde_corr == 14.4:
 #            sipmscen = 4 # 10um
-#            
+#
 #        if pde_corr == 34.5:
 #            sipmscen = 5 # 15um
-#        
+#
 #        for sipm_area in [2.0, 4.0, 9.0]:
-#            
+#
 #            outFileName = f"mip_{mip}_pde_ratio_{pde_corr}_{pde_base}_sipm_area_{sipm_area}.csv"
 #            print(outFileName)
 #            dframe = run_sim(
@@ -293,10 +319,3 @@ print(pd.DataFrame(dframe))
 #            df = pd.DataFrame(dframe)
 #            df = df[list(dframe.keys())]
 #            df.to_csv(f"{out_dir}/{outFileName}")
-
-
-# In[ ]:
-
-
-
-
