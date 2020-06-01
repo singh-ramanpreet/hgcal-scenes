@@ -373,6 +373,13 @@ if __name__ == "__main__":
     run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
     run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
     run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    # jan 20 testbeam result
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
     # jan 20 testbeam result + updated Noise
     run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
     run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
@@ -384,9 +391,9 @@ if __name__ == "__main__":
     run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
     run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
     run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
 
 
     for i in run_for:

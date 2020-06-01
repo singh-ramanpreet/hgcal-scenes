@@ -2,6 +2,7 @@
 
 import ROOT
 import pandas as pd
+import os
 from collections import OrderedDict
 
 ROOT.gROOT.SetBatch(True)
@@ -23,7 +24,7 @@ scene["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": RO
 scene["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
                    "file": f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv"}
 
-def make_scene(scene=scene, sn_cut=5.0, out_name="scene"):
+def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
     for s in scene:
         df = pd.read_csv(scene[s]["file"], index_col=0)
         df["full_tb"] = False
@@ -165,8 +166,15 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene"):
 
     legend.Draw()    
     canvas.Draw()
-    canvas.SaveAs(f"{out_name}.pdf")
+    os.makedirs(out_dir, exist_ok=True)
+    canvas.SaveAs(f"{out_dir}/{out_name}.pdf")
 
 
 if __name__ == "__main__":
-    make_scene()
+
+    out_dir = "plot_scenes"
+    from scenes_def import *
+    make_scene(scene=sceneA_jan20_0, out_name="sceneA_jan20_0", out_dir=out_dir)
+    make_scene(scene=sceneA_jan20_1, out_name="sceneA_jan20_1", out_dir=out_dir)
+    make_scene(scene=sceneA_jan20_full, out_name="sceneA_jan20_full", out_dir=out_dir)
+    make_scene(scene=sceneA_jun19, out_name="sceneA_jun19", out_dir=out_dir)
