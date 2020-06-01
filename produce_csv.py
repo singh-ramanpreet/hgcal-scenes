@@ -268,7 +268,7 @@ def run_sim(
                 for j in range(initial_ring, initial_ring + int(i[1:])):
                     area += cell_geometries[j]["area"]
                 initial_ring = initial_ring + int(i[1:])
-                tb_areas_[i] = area * 8.0
+                tb_areas_[i] = area
         return tb_areas_
 
     tileboards_area = tb_area()
@@ -367,20 +367,30 @@ if __name__ == "__main__":
 
     run_for = []
     # jun 19 testbeam result
-    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
-    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
-    run_for.append({"radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
     # jan 20 testbeam result + updated Noise
-    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
     # jan 20 testbeam result + updated Noise + updated Rad Damage
-    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
 
 
     for i in run_for:
+        name = i["name"]
         radscen = i["radscen"]
         mip = i["mip"]
         pde_base = i["pde_base"]
@@ -388,7 +398,7 @@ if __name__ == "__main__":
         sipmscen = i["sipmscen"]
         sipm_area = i["sipm_area"]
 
-        outFileName = f"mip_{mip}_pdeC_{pde_corr}_{pde_base}_sipmA_{sipm_area}_rad_{radscen}_sipmN_{sipmscen}.csv"
+        outFileName = f"{name}_mip_{mip}_pdeC_{pde_corr}_{pde_base}_sipmA_{sipm_area}_rad_{radscen}_sipmN_{sipmscen}.csv"
         print(outFileName)
         dframe = run_sim(
             lumi=3000,
