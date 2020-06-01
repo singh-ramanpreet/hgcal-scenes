@@ -7,12 +7,8 @@ from collections import OrderedDict
 
 ROOT.gROOT.SetBatch(True)
 
-csv_dir = "csv_output"
-# extract geometry from any csv
-temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv")
-tileboard_names = list(set(temp_pd["tileboard_name"]))
-boards = temp_pd[["layer", "ring", "tileboard_name", "tileboard_rin", "tileboard_rout", "tileboard_area"]]
 
+csv_dir = "csv_output"
 
 scene = OrderedDict()
 scene["cast_4"] = {"name": "Cast", "sipm": 4.0, "device": "HDR15", "color": ROOT.kYellow + 1,
@@ -25,6 +21,12 @@ scene["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": RO
                    "file": f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv"}
 
 def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
+    # extract geometry from any csv
+    temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv")
+    tileboard_names = list(set(temp_pd["tileboard_name"]))
+    boards = temp_pd[["layer", "ring", "tileboard_name", "tileboard_rin", "tileboard_rout", "tileboard_area"]]
+    boards = boards.copy(deep=True)
+
     for s in scene:
         df = pd.read_csv(scene[s]["file"], index_col=0)
         df["full_tb"] = False

@@ -2,6 +2,8 @@
 csv_*/
 plot_*/
 setup_env/
+current*/
+[0-9]*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
