@@ -6,8 +6,17 @@ import pandas as pd
 import os
 import copy
 from pyroot_cms_scripts import CMS_style
+import argparse
 
 ROOT.gROOT.SetBatch(True)
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--csv-dir", type=str, default="csv_output", dest="csv_dir")
+
+args = parser.parse_args()
+
+csv_dir = args.csv_dir
 
 
 def make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",

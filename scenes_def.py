@@ -1,8 +1,9 @@
 import ROOT
 from collections import OrderedDict
 from copy import deepcopy
+import sys
 
-csv_dir = "csv_output"
+csv_dir = sys.argv[1]
 
 # jun 19 results
 csv_map = {}
@@ -19,12 +20,51 @@ csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": 
 csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
                    "file": f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv"}
 
-sceneA_jun19 = OrderedDict({
-    "cast_4": deepcopy(csv_map["cast_4"]),
-    "cast_2": deepcopy(csv_map["cast_2"]),
-    "mold_4": deepcopy(csv_map["mold_4"]),
-    "mold_2": deepcopy(csv_map["mold_2"])
-})
+#########################################
+# Preference order: read bottom to top. #
+#########################################
+
+def fsceneA(csv_map):
+    return OrderedDict({
+        "cast_4": deepcopy(csv_map["cast_4"]),
+        "cast_2": deepcopy(csv_map["cast_2"]),
+        "mold_4": deepcopy(csv_map["mold_4"]),
+        "mold_2": deepcopy(csv_map["mold_2"])
+    })
+
+def fsceneA_with9mm2(csv_map):
+    return OrderedDict({
+        "cast_9": deepcopy(csv_map["cast_9"]),
+        "cast_4": deepcopy(csv_map["cast_4"]),
+        "cast_2": deepcopy(csv_map["cast_2"]),
+        #"mold_9": deepcopy(csv_map["mold_9"]),
+        "mold_4": deepcopy(csv_map["mold_4"]),
+        "mold_2": deepcopy(csv_map["mold_2"])
+    })
+
+def fsceneB(csv_map):
+    return OrderedDict({
+        "cast_4": deepcopy(csv_map["cast_4"]),
+        "mold_4": deepcopy(csv_map["mold_4"]),
+        "cast_2": deepcopy(csv_map["cast_2"]),
+        "mold_2": deepcopy(csv_map["mold_2"])
+    })
+
+def fsceneB_with9mm2(csv_map):
+    return OrderedDict({
+        "cast_9": deepcopy(csv_map["cast_9"]),
+        #"mold_9": deepcopy(csv_map["mold_9"]),
+        "cast_4": deepcopy(csv_map["cast_4"]),
+        "mold_4": deepcopy(csv_map["mold_4"]),
+        "cast_2": deepcopy(csv_map["cast_2"]),
+        "mold_2": deepcopy(csv_map["mold_2"])
+    })
+
+sceneA_jun19 = fsceneA(csv_map)
+sceneA_jun19_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_jun19 = fsceneB(csv_map)
+sceneB_jun19_with9mm2 = fsceneB_with9mm2(csv_map)
+
 
 # jan 20 results
 csv_map = {}
@@ -41,12 +81,10 @@ csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": 
 csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
                    "file": f"{csv_dir}/mold_mip_25_pdeC_34.9_36_sipmA_2.0_rad_3_sipmN_5.csv"}
 
-sceneA_jan20_0 = OrderedDict({
-    "cast_4": deepcopy(csv_map["cast_4"]),
-    "cast_2": deepcopy(csv_map["cast_2"]),
-    "mold_4": deepcopy(csv_map["mold_4"]),
-    "mold_2": deepcopy(csv_map["mold_2"])
-})
+sceneA_jan20_0 = fsceneA(csv_map)
+sceneA_jan20_0_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_jan20_0 = fsceneB(csv_map)
+sceneB_jan20_0_with9mm2 = fsceneB_with9mm2(csv_map)
 
 
 # jan 20 results + new noise
@@ -64,12 +102,10 @@ csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": 
 csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
                    "file": f"{csv_dir}/mold_mip_25_pdeC_34.9_36_sipmA_2.0_rad_3_sipmN_51.csv"}
 
-sceneA_jan20_1 = OrderedDict({
-    "cast_4": deepcopy(csv_map["cast_4"]),
-    "cast_2": deepcopy(csv_map["cast_2"]),
-    "mold_4": deepcopy(csv_map["mold_4"]),
-    "mold_2": deepcopy(csv_map["mold_2"])
-})
+sceneA_jan20_1 = fsceneA(csv_map)
+sceneA_jan20_1_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_jan20_1 = fsceneB(csv_map)
+sceneB_jan20_1_with9mm2 = fsceneB_with9mm2(csv_map)
 
 
 # jan 20 results + new noise + new rad damage
@@ -87,9 +123,7 @@ csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": 
 csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
                    "file": f"{csv_dir}/mold_mip_25_pdeC_34.9_36_sipmA_2.0_rad_31_sipmN_51.csv"}
 
-sceneA_jan20_full = OrderedDict({
-    "cast_4": deepcopy(csv_map["cast_4"]),
-    "cast_2": deepcopy(csv_map["cast_2"]),
-    "mold_4": deepcopy(csv_map["mold_4"]),
-    "mold_2": deepcopy(csv_map["mold_2"])
-})
+sceneA_jan20_2 = fsceneA(csv_map)
+sceneA_jan20_2_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_jan20_2 = fsceneB(csv_map)
+sceneB_jan20_2_with9mm2 = fsceneB_with9mm2(csv_map)

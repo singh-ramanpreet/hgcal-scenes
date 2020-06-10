@@ -4,11 +4,18 @@ import ROOT
 import pandas as pd
 import os
 from collections import OrderedDict
+import argparse
 
 ROOT.gROOT.SetBatch(True)
 
+parser = argparse.ArgumentParser()
 
-csv_dir = "csv_output"
+parser.add_argument("--csv-dir", type=str, default="csv_output", dest="csv_dir")
+parser.add_argument("--out-dir", type=str, default="plot_scenes", dest="out_dir")
+
+args = parser.parse_args()
+
+csv_dir = args.csv_dir
 
 scene = OrderedDict()
 scene["cast_4"] = {"name": "Cast", "sipm": 4.0, "device": "HDR15", "color": ROOT.kYellow + 1,
@@ -105,14 +112,16 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
     boards["partial_tb"] = partial_tb
 
     canvas = ROOT.TCanvas("", "", 800, 600)
+    canvas.SetTopMargin(0.03)
     canvas.SetRightMargin(0.3)
 
     detector_frame = canvas.DrawFrame(8, 850, 23, 2720,  "; CEH - Layer; R (mm)")
     detector_frame.Draw()
 
-    legend = ROOT.TLegend(0.71, 1 - len(scene) * 0.18, 0.97, 0.9)
+    legend = ROOT.TLegend(0.71, 0.0, 0.97, 0.97)
     legend.SetTextSize(0.025)
     legend.SetBorderSize(0)
+    legend_entries = 0
 
     for s in scene:
         # total area in scene
@@ -124,8 +133,10 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
         tt2 = f"#splitline{{Scint Area: {scene[s]['total_area']:.2f}m^{{2}}}}{{SiPMs: {scene[s]['sipms_count']:d}}}"
         scene[s]["tbox"] = ROOT.TBox()
         scene[s]["tbox"].SetFillColor(scene[s]["color"])
-        legend.AddEntry(scene[s]["tbox"], tt1, "f")
-        legend.AddEntry("", tt2, "")
+        if scene[s]["sipms_count"] != 0:
+            legend_entries += 1
+            legend.AddEntry(scene[s]["tbox"], tt1, "f")
+            legend.AddEntry("", tt2, "")
 
 
     border_tboxes = []
@@ -168,15 +179,39 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
 
     legend.Draw()    
     canvas.Draw()
+    if legend_entries * 0.15 >= 0.9:
+        legend.SetY1NDC(0.10)
+    else:
+        legend.SetY1NDC(1 - legend_entries * 0.15)
+
+    canvas.Modified()
     os.makedirs(out_dir, exist_ok=True)
     canvas.SaveAs(f"{out_dir}/{out_name}.pdf")
 
 
 if __name__ == "__main__":
 
-    out_dir = "plot_scenes"
-    from scenes_def import *
-    make_scene(scene=sceneA_jan20_0, out_name="sceneA_jan20_0", out_dir=out_dir)
-    make_scene(scene=sceneA_jan20_1, out_name="sceneA_jan20_1", out_dir=out_dir)
-    make_scene(scene=sceneA_jan20_full, out_name="sceneA_jan20_full", out_dir=out_dir)
-    make_scene(scene=sceneA_jun19, out_name="sceneA_jun19", out_dir=out_dir)
+    out_dir = args.out_dir
+
+    # redfine sys.argv before importing scenes definition to pass csv dir
+    import sys
+    sys.argv = ["scenes_def", csv_dir]
+    import scenes_def
+
+    make_scene(scene=scenes_def.sceneA_jan20_0, out_name="sceneA_jan20_0", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jan20_1, out_name="sceneA_jan20_1", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jan20_2, out_name="sceneA_jan20_2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jun19, out_name="sceneA_jun19", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_0, out_name="sceneB_jan20_0", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_1, out_name="sceneB_jan20_1", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_2, out_name="sceneB_jan20_2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jun19, out_name="sceneB_jun19", out_dir=out_dir)
+
+    make_scene(scene=scenes_def.sceneA_jan20_0_with9mm2, out_name="sceneA_jan20_0_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jan20_1_with9mm2, out_name="sceneA_jan20_1_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jan20_2_with9mm2, out_name="sceneA_jan20_2_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jun19_with9mm2, out_name="sceneA_jun19_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_0_with9mm2, out_name="sceneB_jan20_0_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_1_with9mm2, out_name="sceneB_jan20_1_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_2_with9mm2, out_name="sceneB_jan20_2_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jun19_with9mm2, out_name="sceneB_jun19_with9mm2", out_dir=out_dir)
