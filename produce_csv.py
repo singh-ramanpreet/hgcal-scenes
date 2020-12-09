@@ -19,7 +19,9 @@ def run_sim(
     mip_pe=40,
     pde_ov_base=40.0,
     pde_ov_corr=34.3,
-    sipm_area=2.0
+    sipm_area=2.0,
+    sipm_area_corr_choice="default",
+    tile_area_corr_choice="default"
 ):
     """
     lumi -> Integrated luminosity in /fb
@@ -118,10 +120,16 @@ def run_sim(
         #cell_perimeter_ = cell_perimeter(ring)
     
         pde_correction = pde_ov_corr / pde_ov_base
-        
-        sipm_area_correction      = sipm_area / (1.3*1.3)
-        cell_area_correction      = math.sqrt(30*30) / math.sqrt(cell_area_)
-        #cell_perimeter_correction = math.sqrt( 4*30) / math.sqrt(cell_perimeter_)
+
+        if sipm_area_corr_choice == "default":
+            sipm_area_correction      = sipm_area / (1.3*1.3)
+        elif sipm_area_corr_choice == "DESY_Oct2020":
+            sipm_area_correction      = sipm_area / (2.0)
+
+        if tile_area_corr_choice == "default":
+            cell_area_correction      = math.sqrt(30*30) / math.sqrt(cell_area_)
+        elif tile_area_corr_choice == "DESY_Oct2020":
+            cell_area_correction      = math.sqrt(33.68*33.31) / math.sqrt(cell_area_) # R18 tile
 
         return pde_correction * mip_pe * cell_area_correction * sipm_area_correction
     
@@ -367,26 +375,26 @@ if __name__ == "__main__":
 
     run_for = []
     # jun 19 testbeam result
-    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 48, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 2.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 4.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 24, "pde_base": 40, "pde_corr": 34.5, "sipmscen": 5, "sipm_area": 9.0})
     # jan 20 testbeam result
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 2.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 4.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 5, "sipm_area": 9.0})
     # jan 20 testbeam result + updated Noise
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    #run_for.append({"name": "cast", "radscen": 3, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
+    #run_for.append({"name": "mold", "radscen": 3, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
     # jan 20 testbeam result + updated Noise + updated Rad Damage
     run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
     run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
@@ -394,6 +402,16 @@ if __name__ == "__main__":
     run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
     run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
     run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 36, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
+
+    # Oct2020 DESY testbeam results
+    run_for.append({"name": "cast", "radscen": 31, "mip": 37, "pde_base": 37.5, "pde_corr": 30.5, "sipmscen": 51, "sipm_area": 2.0,
+                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    run_for.append({"name": "cast", "radscen": 31, "mip": 37, "pde_base": 37.5, "pde_corr": 30.5, "sipmscen": 51, "sipm_area": 4.0,
+                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    run_for.append({"name": "mold", "radscen": 31, "mip": 20, "pde_base": 37.5, "pde_corr": 30.5, "sipmscen": 51, "sipm_area": 2.0,
+                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    run_for.append({"name": "mold", "radscen": 31, "mip": 20, "pde_base": 37.5, "pde_corr": 30.5, "sipmscen": 51, "sipm_area": 4.0,
+                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
 
 
     for i in run_for:
@@ -404,8 +422,12 @@ if __name__ == "__main__":
         pde_corr = i["pde_corr"]
         sipmscen = i["sipmscen"]
         sipm_area = i["sipm_area"]
+        sipm_area_corr_choice = "default" if "sipm_area_corr_choice" not in i else i["sipm_area_corr_choice"]
+        tile_area_corr_choice = "default" if "tile_area_corr_choice" not in i else i["tile_area_corr_choice"]
 
-        outFileName = f"{name}_mip_{mip}_pdeC_{pde_corr}_{pde_base}_sipmA_{sipm_area}_rad_{radscen}_sipmN_{sipmscen}.csv"
+        outFileName = f"{name}_mip_{mip}_pdeC_{pde_corr}_{pde_base}_sipmA_{sipm_area}_rad_{radscen}_sipmN_{sipmscen}"
+        outFileName += f"_sipmAC_{sipm_area_corr_choice}_tileAC_{tile_area_corr_choice}"
+        outFileName += ".csv"
         print(outFileName)
         dframe = run_sim(
             lumi=3000,
@@ -414,7 +436,9 @@ if __name__ == "__main__":
             mip_pe=mip,
             pde_ov_base=pde_base,
             pde_ov_corr=pde_corr,
-            sipm_area=sipm_area
+            sipm_area=sipm_area,
+            sipm_area_corr_choice=sipm_area_corr_choice,
+            tile_area_corr_choice=tile_area_corr_choice,
         )
         df = pd.DataFrame(dframe)
         df = df[list(dframe.keys())]

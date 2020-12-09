@@ -29,7 +29,7 @@ scene["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": RO
 
 def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
     # extract geometry from any csv
-    temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_24_pdeC_34.5_40_sipmA_2.0_rad_3_sipmN_5.csv")
+    temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_20_pdeC_30.5_37.5_sipmA_2.0_rad_31_sipmN_51_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv")
     tileboard_names = list(set(temp_pd["tileboard_name"]))
     boards = temp_pd[["layer", "ring", "tileboard_name", "tileboard_rin", "tileboard_rout", "tileboard_area"]]
     boards = boards.copy(deep=True)
@@ -187,6 +187,8 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
     canvas.Modified()
     os.makedirs(out_dir, exist_ok=True)
     canvas.SaveAs(f"{out_dir}/{out_name}.pdf")
+    os.popen(f"convert -density 150 -antialias {out_dir}/{out_name}.pdf -trim {out_dir}/{out_name}.png 2> /dev/null")
+
 
 
 if __name__ == "__main__":
@@ -198,20 +200,25 @@ if __name__ == "__main__":
     sys.argv = ["scenes_def", csv_dir]
     import scenes_def
 
-    make_scene(scene=scenes_def.sceneA_jan20_0, out_name="sceneA_jan20_0", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jan20_1, out_name="sceneA_jan20_1", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jan20_2, out_name="sceneA_jan20_2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jun19, out_name="sceneA_jun19", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_0, out_name="sceneB_jan20_0", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_1, out_name="sceneB_jan20_1", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_2, out_name="sceneB_jan20_2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jun19, out_name="sceneB_jun19", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_0, out_name="sceneA_jan20_0", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_1, out_name="sceneA_jan20_1", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_2, out_name="sceneA_jan20_2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jun19, out_name="sceneA_jun19", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_0, out_name="sceneB_jan20_0", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_1, out_name="sceneB_jan20_1", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_2, out_name="sceneB_jan20_2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jun19, out_name="sceneB_jun19", out_dir=out_dir)
 
-    make_scene(scene=scenes_def.sceneA_jan20_0_with9mm2, out_name="sceneA_jan20_0_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jan20_1_with9mm2, out_name="sceneA_jan20_1_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jan20_2_with9mm2, out_name="sceneA_jan20_2_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_jun19_with9mm2, out_name="sceneA_jun19_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_0_with9mm2, out_name="sceneB_jan20_0_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_1_with9mm2, out_name="sceneB_jan20_1_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jan20_2_with9mm2, out_name="sceneB_jan20_2_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_jun19_with9mm2, out_name="sceneB_jun19_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_0_with9mm2, out_name="sceneA_jan20_0_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_1_with9mm2, out_name="sceneA_jan20_1_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jan20_2_with9mm2, out_name="sceneA_jan20_2_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_jun19_with9mm2, out_name="sceneA_jun19_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_0_with9mm2, out_name="sceneB_jan20_0_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_1_with9mm2, out_name="sceneB_jan20_1_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jan20_2_with9mm2, out_name="sceneB_jan20_2_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_jun19_with9mm2, out_name="sceneB_jun19_with9mm2", out_dir=out_dir)
+
+    make_scene(scene=scenes_def.sceneA_jan20_2, out_name="sceneA_jan20_2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_2, out_name="sceneB_jan20_2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_DESY_Oct2020, out_name="sceneA_DESY_Oct2020", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_DESY_Oct2020, out_name="sceneB_DESY_Oct2020", out_dir=out_dir)

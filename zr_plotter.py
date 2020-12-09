@@ -62,7 +62,9 @@ def make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
         tp.AddText(tpave_text)
         tp.Draw()
     canvas.Draw()
-    canvas.SaveAs(f"{out_dir}/{out_name}_{z_axis_param.replace('/', '_')}.pdf")
+    out_filename=f"{out_dir}/{out_name}_{z_axis_param.replace('/', '_')}"
+    canvas.SaveAs(f"{out_filename}.pdf")
+    os.popen(f"convert -density 150 -antialias {out_filename}.pdf -trim {out_filename}.png 2> /dev/null")
 
 
 if __name__ == "__main__":
