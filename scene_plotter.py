@@ -101,9 +101,9 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
 
     boards["mipsig"] = mipsig
     boards["noise"] = noise
-    boards["sn_ratio"] = sn_ratio
-    boards["cell_rin"] = cell_rin
-    boards["cell_rout"] = cell_rout
+    boards["S/N"] = sn_ratio
+    boards["inner"] = cell_rin
+    boards["outer"] = cell_rout
     boards["cell_area"] = cell_area
     boards["sipmA"] = sipmA
     boards["scint"] = scint
@@ -161,8 +161,8 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
 
                 for i in range(len(boards[location]["partial_tb"].values)):
                     if boards[location]["partial_tb"].values[i] and not boards[location]["full_tb"].values[0]:
-                        r1 = boards[location]["cell_rin"].values[i]
-                        r2 = boards[location]["cell_rout"].values[i]
+                        r1 = boards[location]["inner"].values[i]
+                        r2 = boards[location]["outer"].values[i]
                         color = boards[location]["color"].values[i]
                         partial_tboxes.append(ROOT.TBox(layer - 0.5, r1, layer + 0.5, r2))
                         partial_tboxes[-1].SetFillColor(int(color))
@@ -189,7 +189,17 @@ def make_scene(scene=scene, sn_cut=5.0, out_name="scene", out_dir=""):
     canvas.SaveAs(f"{out_dir}/{out_name}.pdf")
     os.popen(f"convert -density 150 -antialias {out_dir}/{out_name}.pdf -trim {out_dir}/{out_name}.png 2> /dev/null")
 
+    # print scene details per cell
+    boards.to_csv(f"{out_dir}/{out_name}.csv")
 
+    # print scene details per tb
+    details_out = open(f"{out_dir}/{out_name}_tb.csv", "w")
+    print("Layer,Tileboard,Scint,Area_m^2", file=details_out)
+    unique_id = list(dict.fromkeys(zip(boards["layer"], boards["tileboard_name"], boards["scint"])))
+    for layer,tb,s in unique_id:
+        locate = (boards["layer"] == layer) & (boards["scint"] == s) & (boards["tileboard_name"] == tb)
+        tb_area = sum(boards.loc[locate]["cell_area"].values) * 2 * 288 / 1e4
+        print(f"{layer},{tb},{s},{tb_area:.2f}", file=details_out)
 
 if __name__ == "__main__":
 

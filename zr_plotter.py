@@ -12,16 +12,20 @@ ROOT.gROOT.SetBatch(True)
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--csv-dir", type=str, default="csv_output", dest="csv_dir")
+parser.add_argument("--csv-files", dest="csv_files", default=[], nargs="*")
+parser.add_argument("--out-dir", type=str, default="plot_zr", dest="out_dir")
+parser.add_argument("--vars", action="append", default=[])
 
 args = parser.parse_args()
 
-csv_dir = args.csv_dir
+csv_files = args.csv_files
+out_dir = args.out_dir
+variables = args.vars
 
 
 def make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
               z_axis_min = 1, z_axis_max = 9,
-              df=None, out_name="test", tpave_text="", out_dir="plot_zr"):
+              df=None, out_name="test", tpave_text="", out_dir=out_dir):
 
     os.makedirs(out_dir, exist_ok=True)
 
@@ -68,15 +72,12 @@ def make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
 
 
 if __name__ == "__main__":
-
-    csv_dir = "csv_output"
-    csv_files = os.listdir(csv_dir)
-
+    
     for inputfile in csv_files:
         if not inputfile.endswith(".csv"): continue
-        out_name = inputfile.rstrip(".csv")
+        out_name = inputfile.rstrip(".csv").split('/')[-1]
 
-        df = pd.read_csv(f"{csv_dir}/{inputfile}", index_col=0)
+        df = pd.read_csv(f"{inputfile}", index_col=0)
         NRGBs = 7
         NCont = 100
         stops = np.array([0.00, 0.25, 0.35, 0.55, 0.63, 0.75, 1.00])
@@ -95,22 +96,27 @@ if __name__ == "__main__":
         CMS_style.SetTitleOffset(1.2, "Z")
         CMS_style.cd()
 
-        make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
-                  z_axis_min = 1, z_axis_max = 9,
-                  df=df, out_name=out_name, tpave_text="", out_dir="plot_zr")
+        if ("S/N" in variables) or len(variables) == 0:
+            make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
+                      z_axis_min = 1, z_axis_max = 9,
+                      df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
-        make_plot(z_axis_param = "mipsig", z_axis_title = "MIP (PE) at 3000 fb^{-1}",
-                  z_axis_min = 0, z_axis_max = 70,
-                  df=df, out_name=out_name, tpave_text="", out_dir="plot_zr")
+        if ("mipsig" in variables) or len(variables) == 0:
+            make_plot(z_axis_param = "mipsig", z_axis_title = "MIP (PE) at 3000 fb^{-1}",
+                      z_axis_min = 0, z_axis_max = 70,
+                      df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
-        make_plot(z_axis_param = "sipm_noise", z_axis_title = "SIPM Noise (PE) at 3000 fb^{-1}",
-                  z_axis_min = 0, z_axis_max = 15,
-                  df=df, out_name=out_name, tpave_text="", out_dir="plot_zr")
+        if ("sipm_noise" in variables) or len(variables) == 0:
+            make_plot(z_axis_param = "sipm_noise", z_axis_title = "SIPM Noise (PE) at 3000 fb^{-1}",
+                      z_axis_min = 0, z_axis_max = 15,
+                      df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
-        make_plot(z_axis_param = "fluence", z_axis_title = "Fluence at 3000 fb^{-1}",
-                  z_axis_min = 0, z_axis_max = 5e13,
-                  df=df, out_name=out_name, tpave_text="", out_dir="plot_zr")
+        if ("fluence" in variables) or len(variables) == 0:
+            make_plot(z_axis_param = "fluence", z_axis_title = "Fluence at 3000 fb^{-1}",
+                      z_axis_min = 0, z_axis_max = 5e13,
+                      df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
-        make_plot(z_axis_param = "radiation_loss", z_axis_title = "Radiation Damage at 3000 fb^{-1}",
-                  z_axis_min = 0.5, z_axis_max = 1.0,
-                  df=df, out_name=out_name, tpave_text="", out_dir="plot_zr")
+        if ("radiation_loss" in variables) or len(variables) == 0:
+            make_plot(z_axis_param = "radiation_loss", z_axis_title = "Radiation Damage at 3000 fb^{-1}",
+                      z_axis_min = 0.5, z_axis_max = 1.0,
+                      df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
