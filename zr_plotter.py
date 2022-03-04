@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
         if ("S/N" in variables) or len(variables) == 0:
             make_plot(z_axis_param = "S/N", z_axis_title = "S/N at 3000 fb^{-1}",
-                      z_axis_min = 1, z_axis_max = 9,
+                      z_axis_min = 1, z_axis_max = 6,
                       df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
         if ("mipsig" in variables) or len(variables) == 0:
