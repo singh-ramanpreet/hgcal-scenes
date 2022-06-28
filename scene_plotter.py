@@ -30,7 +30,7 @@ scene["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": RO
 
 def make_scene(scene=scene, sn_cut=args.sn_cut, out_name="scene", out_dir=""):
     # extract geometry from any csv
-    temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_12.18_pdeC_30.0_25.0_sipmA_4.0_rad_31_sipmN_51_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv")
+    temp_pd = pd.read_csv(f"{csv_dir}/mold_mip_25_pdeC_34.9_40_sipmA_4.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv")
     tileboard_names = list(set(temp_pd["tileboard_name"]))
     boards = temp_pd[["layer", "ring", "tileboard_name", "tileboard_rin", "tileboard_rout", "tileboard_area"]]
     boards = boards.copy(deep=True)
@@ -239,7 +239,17 @@ if __name__ == "__main__":
     #make_scene(scene=scenes_def.sceneB_jan20_pde_fix, out_name="sceneB_jan20_pde_fix", out_dir=out_dir)
     #make_scene(scene=scenes_def.sceneB_jan20_pde_fix_with9mm2, out_name="sceneB_jan20_pde_fix_with9mm2", out_dir=out_dir)
     
-    make_scene(scene=scenes_def.sceneA_DESY_Oct2020_pde_fix, out_name="sceneA_DESY_Oct2020_pde_fix", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneA_DESY_Oct2020_pde_fix_with9mm2, out_name="sceneA_DESY_Oct2020_pde_fix_with9mm2", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_DESY_Oct2020_pde_fix, out_name="sceneB_DESY_Oct2020_pde_fix", out_dir=out_dir)
-    make_scene(scene=scenes_def.sceneB_DESY_Oct2020_pde_fix_with9mm2, out_name="sceneB_DESY_Oct2020_pde_fix_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_DESY_Oct2020_pde_fix, out_name="sceneA_DESY_Oct2020_pde_fix", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_DESY_Oct2020_pde_fix_with9mm2, out_name="sceneA_DESY_Oct2020_pde_fix_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_DESY_Oct2020_pde_fix, out_name="sceneB_DESY_Oct2020_pde_fix", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_DESY_Oct2020_pde_fix_with9mm2, out_name="sceneB_DESY_Oct2020_pde_fix_with9mm2", out_dir=out_dir)
+
+    #make_scene(scene=scenes_def.sceneA_DESY_Oct2020_VIV_1p4, out_name="sceneA_DESY_Oct2020_VIV_1p4", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneA_DESY_Oct2020_VIV_1p4_with9mm2, out_name="sceneA_DESY_Oct2020_VIV_1p4_with9mm2", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_DESY_Oct2020_VIV_1p4, out_name="sceneB_DESY_Oct2020_VIV_1p4", out_dir=out_dir)
+    #make_scene(scene=scenes_def.sceneB_DESY_Oct2020_VIV_1p4_with9mm2, out_name="sceneB_DESY_Oct2020_VIV_1p4_with9mm2", out_dir=out_dir)
+
+    make_scene(scene=scenes_def.sceneA_jan20_fix_vto2p0, out_name="sceneA_jan20_fix_vto2p0", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneA_jan20_fix_vto2p0_with9mm2, out_name="sceneA_jan20_fix_vto2p0_with9mm2", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_fix_vto2p0, out_name="sceneB_jan20_fix_vto2p0", out_dir=out_dir)
+    make_scene(scene=scenes_def.sceneB_jan20_fix_vto2p0_with9mm2, out_name="sceneB_jan20_fix_vto2p0_with9mm2", out_dir=out_dir)

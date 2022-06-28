@@ -103,12 +103,12 @@ if __name__ == "__main__":
 
         if ("mipsig" in variables) or len(variables) == 0:
             make_plot(z_axis_param = "mipsig", z_axis_title = "MIP (PE) at 3000 fb^{-1}",
-                      z_axis_min = 0, z_axis_max = 70,
+                      z_axis_min = 0, z_axis_max = 120,
                       df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
         if ("sipm_noise" in variables) or len(variables) == 0:
             make_plot(z_axis_param = "sipm_noise", z_axis_title = "SIPM Noise (PE) at 3000 fb^{-1}",
-                      z_axis_min = 0, z_axis_max = 15,
+                      z_axis_min = 0, z_axis_max = 30,
                       df=df, out_name=out_name, tpave_text="", out_dir=out_dir)
 
         if ("fluence" in variables) or len(variables) == 0:

@@ -6,8 +6,8 @@ import pandas as pd
 import sys
 sys.path.append("hgcal-scint-tools/performance")
 
-from ec_radiation import fluence
-from ec_radiation import dose
+from ec_radiation_v4 import fluence
+from ec_radiation_v4 import dose
 from ec_dimensions import r_inner
 from ec_dimensions import r_outer, r_scint
 
@@ -127,7 +127,7 @@ def run_sim(
         if sipm_area_corr_choice == "default":
             sipm_area_correction      = sipm_area / (1.3*1.3)
         elif sipm_area_corr_choice == "DESY_Oct2020":
-            sipm_area_correction      = sipm_area / (2.0)
+            sipm_area_correction      = sipm_area / (4.0)
 
         if tile_area_corr_choice == "default":
             cell_area_correction      = math.sqrt(30*30) / math.sqrt(cell_area_)
@@ -181,7 +181,25 @@ def run_sim(
             sipm_base_temp    = 30 # -30
             sipm_base_fluence = 5e13
             sipm_base_area    = 2
-        
+
+        if sipmscen == 52:
+            sipm_base_noise   = 19 # V_IV+2.0V, V_TO+2.6V
+            sipm_base_temp    = 30 # -30
+            sipm_base_fluence = 5e13
+            sipm_base_area    = 2
+
+        if sipmscen == 53:
+            sipm_base_noise   = 14 # V_IV+1.4V, V_TO+2.0V
+            sipm_base_temp    = 30 # -30
+            sipm_base_fluence = 5e13
+            sipm_base_area    = 2
+
+        if sipmscen == 54:
+            sipm_base_noise   = 11 # V_IV+1.0V, V_TO+1.4V
+            sipm_base_temp    = 30 # -30
+            sipm_base_fluence = 5e13
+            sipm_base_area    = 2
+
         if sipmscen == 6:
             sipm_base_noise   = math.sqrt(150e6*15e-9) # HE 150 MHz at -30, 2mm2 device at 2.1e12, 2V OV
             sipm_base_temp    = 30 # -30
@@ -232,6 +250,11 @@ def run_sim(
         if radscen == 31:
             # using fit of D= 6.0 * R^0.5 (HB Phase 2 TDR)
             dose_constant = 6.0 * pow(drate, 0.5) * 1e6
+            return math.exp(-d / dose_constant)
+
+        if radscen == 4:
+            # from Katja
+            dose_constant = 6.0 * pow(drate, 0.35) * 1e6
             return math.exp(-d / dose_constant)
 
     # -----------------
@@ -434,26 +457,40 @@ if __name__ == "__main__":
     #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
 
     # FNAL Jan 20 with fix for breakdown/over voltage used
-    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 9.0})
-    run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 2.0})
-    run_for.append({"name": "mold", "radscen": 31, "mip": 25, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 51, "sipm_area": 4.0})
-    
+    run_for.append({"name": "cast", "radscen": 4, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 52, "sipm_area": 2.0})
+    run_for.append({"name": "cast", "radscen": 4, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 52, "sipm_area": 4.0})
+    run_for.append({"name": "cast", "radscen": 4, "mip": 35, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 52, "sipm_area": 9.0})
+    run_for.append({"name": "mold", "radscen": 4, "mip": 25, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 52, "sipm_area": 2.0})
+    run_for.append({"name": "mold", "radscen": 4, "mip": 25, "pde_base": 40, "pde_corr": 34.9, "sipmscen": 52, "sipm_area": 4.0})
+
     # Oct2020 DESY testbeam results with for breakdown/over voltage used
     # from slide3 https://indico.cern.ch/event/1068357/contributions/4492439/attachments/2298008/3908321/HGCAL_scint_scenarios_20210825.pdf
     # injection: 836/(tile edge) p.e., cast: 1440/(tile edge), for 4mm^2, divide by 2.06 for 2mm^2
     # injection MIP: 12.18, cast MIP: 20.78 for R18, 2mm^2 at 2V
-    run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 2.0,
-                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 4.0,
-                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
-    run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 9.0,
-                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
-    run_for.append({"name": "mold", "radscen": 31, "mip": 12.18, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 2.0,
-                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
-    run_for.append({"name": "mold", "radscen": 31, "mip": 12.18, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 4.0,
-                    "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 2.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 4.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "cast", "radscen": 31, "mip": 20.78, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 9.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "mold", "radscen": 31, "mip": 12.18, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 2.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "mold", "radscen": 31, "mip": 12.18, "pde_base": 25.0, "pde_corr": 30.0, "sipmscen": 51, "sipm_area": 4.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+
+    # Oct2020 DESY testbeam results (new radiation model)
+    # V_IV+1.4V, V_TO+2.0V
+    # injection MIP: 25, cast MIP: 43 for R18, 4mm^2 at 2V
+    #run_for.append({"name": "cast", "radscen": 4, "mip": 43, "pde_base": 1.0, "pde_corr": 1.0, "sipmscen": 53, "sipm_area": 2.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "cast", "radscen": 4, "mip": 43, "pde_base": 1.0, "pde_corr": 1.0, "sipmscen": 53, "sipm_area": 4.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "cast", "radscen": 4, "mip": 43, "pde_base": 1.0, "pde_corr": 1.0, "sipmscen": 53, "sipm_area": 9.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "mold", "radscen": 4, "mip": 25, "pde_base": 1.0, "pde_corr": 1.0, "sipmscen": 53, "sipm_area": 2.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
+    #run_for.append({"name": "mold", "radscen": 4, "mip": 25, "pde_base": 1.0, "pde_corr": 1.0, "sipmscen": 53, "sipm_area": 4.0,
+    #                "sipm_area_corr_choice": "DESY_Oct2020", "tile_area_corr_choice": "DESY_Oct2020"})
 
     for i in run_for:
         name = i["name"]

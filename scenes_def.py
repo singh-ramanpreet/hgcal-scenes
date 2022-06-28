@@ -180,3 +180,42 @@ sceneA_DESY_Oct2020_pde_fix = fsceneA(csv_map)
 sceneA_DESY_Oct2020_pde_fix_with9mm2 = fsceneA_with9mm2(csv_map)
 sceneB_DESY_Oct2020_pde_fix = fsceneB(csv_map)
 sceneB_DESY_Oct2020_pde_fix_with9mm2 = fsceneB_with9mm2(csv_map)
+
+
+# DESY Oct2020 results
+# V_IV+1.4V, V_TO+2.0V
+csv_map = {}
+csv_map["cast_9"] = {"name": "Cast", "sipm": 9.0, "device": "HDR15", "color": ROOT.kYellow + 2,
+                   "file": f"{csv_dir}/cast_mip_20.78_pdeC_30.0_25.0_sipmA_9.0_rad_4_sipmN_53_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv"}
+csv_map["cast_4"] = {"name": "Cast", "sipm": 4.0, "device": "HDR15", "color": ROOT.kYellow + 1,
+                   "file": f"{csv_dir}/cast_mip_20.78_pdeC_30.0_25.0_sipmA_4.0_rad_4_sipmN_53_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv"}
+csv_map["cast_2"] = {"name": "Cast", "sipm": 2.0, "device": "HDR15", "color": ROOT.kYellow,
+                   "file": f"{csv_dir}/cast_mip_20.78_pdeC_30.0_25.0_sipmA_2.0_rad_4_sipmN_53_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv"}
+csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": ROOT.kBlue + 2,
+                   "file": f"{csv_dir}/mold_mip_12.18_pdeC_30.0_25.0_sipmA_4.0_rad_4_sipmN_53_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv"}
+csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
+                   "file": f"{csv_dir}/mold_mip_12.18_pdeC_30.0_25.0_sipmA_2.0_rad_4_sipmN_53_sipmAC_DESY_Oct2020_tileAC_DESY_Oct2020.csv"}
+
+sceneA_DESY_Oct2020_VIV_1p4 = fsceneA(csv_map)
+sceneA_DESY_Oct2020_VIV_1p4_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_DESY_Oct2020_VIV_1p4 = fsceneB(csv_map)
+sceneB_DESY_Oct2020_VIV_1p4_with9mm2 = fsceneB_with9mm2(csv_map)
+
+# fix
+# jan 20 results, new rad scene, noise fix V_TO+2.0V
+csv_map = {}
+csv_map["cast_9"] = {"name": "Cast", "sipm": 9.0, "device": "HDR15", "color": ROOT.kYellow + 2,
+                   "file": f"{csv_dir}/cast_mip_35_pdeC_34.9_40_sipmA_9.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv"}
+csv_map["cast_4"] = {"name": "Cast", "sipm": 4.0, "device": "HDR15", "color": ROOT.kYellow + 1,
+                   "file": f"{csv_dir}/cast_mip_35_pdeC_34.9_40_sipmA_4.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv"}
+csv_map["cast_2"] = {"name": "Cast", "sipm": 2.0, "device": "HDR15", "color": ROOT.kYellow,
+                   "file": f"{csv_dir}/cast_mip_35_pdeC_34.9_40_sipmA_2.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv"}
+csv_map["mold_4"] = {"name": "Molded", "sipm": 4.0, "device": "HDR15", "color": ROOT.kBlue + 2,
+                   "file": f"{csv_dir}/mold_mip_25_pdeC_34.9_40_sipmA_4.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv"}
+csv_map["mold_2"] = {"name": "Molded", "sipm": 2.0, "device": "HDR15", "color": ROOT.kBlue,
+                   "file": f"{csv_dir}/mold_mip_25_pdeC_34.9_40_sipmA_2.0_rad_4_sipmN_52_sipmAC_default_tileAC_default.csv"}
+
+sceneA_jan20_fix_vto2p0 = fsceneA(csv_map)
+sceneA_jan20_fix_vto2p0_with9mm2 = fsceneA_with9mm2(csv_map)
+sceneB_jan20_fix_vto2p0 = fsceneB(csv_map)
+sceneB_jan20_fix_vto2p0_with9mm2 = fsceneB_with9mm2(csv_map)
