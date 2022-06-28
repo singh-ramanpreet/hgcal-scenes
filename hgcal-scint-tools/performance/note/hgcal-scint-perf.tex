@@ -1,0 +1,149 @@
+\documentclass{article}[12pt]
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{setspace}
+\geometry{verbose,tmargin=1.0in,bmargin=1.0in,lmargin=1.0in,rmargin=1.0in}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+\newcommand{\unit}[1]{\ensuremath{\mathrm{\;#1}}}
+%\doublespace
+%\lhead{Statistics and Data Analysis}
+%\rhead{PHYS2605 -- 2016}
+\begin{document}
+\title{CE Scintillator Modelling}
+\author{Jeremiah Mans}
+\maketitle
+
+\section{Dose and Fluence}
+
+The radiation exposure of the calorimeter is estimated using FLUKA.  A
+new run of FLUKA (3.7.9.1) was produced in October 2016 to determine
+dose and fluence for the all-cold geometry where there is no thermal
+screen between the BH and FH sections.  For the dose, the reported
+dose is for an admixture of absorber material and plastic scintillator
+material.  It is important to correct the simulation results for the
+increased dose in the low-Z material.  The required factor is 2.7 for
+all layers except for BH layer 1 in the simulation, where the sampling
+volume included only the copper of the cooling plate along with the
+scintillator, in which case the correction factor is 1.8.
+
+To provide values at all points along the scintillator volume, the
+simulation results were fit to an exponetial form
+\[
+F(r) = 10^{a+br+cr^2}
+\]
+The full set of fit parameters is given in Table~\ref{tab:fits}.
+These are the fit parameters to provide the doses and fluences for
+$3000\unit{fb^{-1}}$.  An exposure of $4500\unit{fb^{-1}}$ would
+require increasing the value by 150\%.  The fit function provides dose
+in units of rad and fluence in units of 1-MeV-equivalent
+neutrons~$/\unit{cm^2}$.
+
+\begin{table}[h]
+\caption{Dose (rad) and fluence (1-MeV-equivalent neutrons per cm$^2$) fit parameters for each of the layers of the calorimeter where scintillator is planned to be used, based on CMS BRIL FLUKA run 3.7.9.1.}\label{tab:fits}
+\begin{center}
+\begin{tabular}{l|ccc|ccc}\hline
+Layer & $a_d$ & $b_d\,[\mathrm{m}^{-1}]$ & $c_d\,[\mathrm{m}^{-2}]$ & $a_f$ & $b_f\,[\mathrm{m}^{-1}]$ & $c_f\,[\mathrm{m}^{-2}]$  \\ \hline
+FH 9	& 8.221 & -2.87 & 0.554 & 16.013 & -1.660 & 0.057\\
+FH 10	& 8.238 & -3.02 & 0.616 & 16.010 & -1.772 & 0.107\\
+FH 11	& 8.180 & -3.02 & 0.607 & 16.012 & -1.894 & 0.161\\
+FH 12	& 8.245 & -3.29 & 0.730 & 16.007 & -1.999 & 0.206\\
+BH 1	& 8.003 & -3.02 & 0.605 & 16.019 & -2.313 & 0.340\\
+BH 2	& 8.154 & -3.42 & 0.767 & 16.054 & -2.593 & 0.446\\
+BH 3	& 8.120 & -3.54 & 0.795 & 16.072 & -2.803 & 0.518\\
+BH 4	& 8.227 & -3.90 & 0.912 & 16.136 & -3.068 & 0.609\\
+BH 5	& 8.237 & -4.04 & 0.941 & 16.189 & -3.278 & 0.664\\
+BH 6	& 8.349 & -4.40 & 1.072 & 16.222 & -3.443 & 0.704\\
+BH 7	& 8.362 & -4.51 & 1.085 & 16.287 & -3.653 & 0.759\\
+BH 8	& 8.366 & -4.63 & 1.104 & 16.324 & -3.791 & 0.791\\
+BH 9	& 8.548 & -5.01 & 1.218 & 16.348 & -3.880 & 0.792\\
+BH 10	& 8.562 & -5.09 & 1.233 & 16.372 & -3.981 & 0.815\\
+BH 11	& 8.627 & -5.25 & 1.277 & 16.323 & -3.966 & 0.814\\
+BH 12	& 8.547 & -5.19 & 1.277 & 16.082 & -3.731 & 0.791\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Radiation damage to scintillator}
+
+The light loss due to irradiation is calculated using an exponential decrease as a function of dose $d$.
+\[
+S(d) = S(0) e^{-\frac{d}{D}}
+\]
+The parameter $D$ is the \emph{dose constant}, which typically depends
+on the dose rate $d_r$.  Typically, the dose rate is provided in units
+of krad/hr.
+
+The dose constants considered in recent analysis are:
+\begin{itemize}
+\item \emph{Best-10-HPD} -- This fit is based on the best 10 HPDs in the HE, which minimizes the impact of HPD damage and is the official damage model from the Barrel and Endcap Phase 2 TDRs.  The fit necessarily includes the effects of radiation on the wavelength-shifting fibers and the clear fibers, as well as any effects from the geometry of the cells.  This model can be considered a ``conservative'' or ``pessimistic'' estimate of damage.
+  \[
+  D_\mathrm{HPD10} = (3.6\unit{Mrad}) \cdot d_r^{0.5}
+  \]
+\item \emph{Scint-only} -- This fit is based on the higher-dose-rate data taken in irradiation facilities where the cells were of similar size to the CE-H cells and where no impact of WLS or clear fibers is present.  This model can be considered a ``more-optimistic'' model, but one which is more realistic than the Best-10-HPD case.
+  \[
+  D_\mathrm{scint} = (6.0\unit{Mrad}) \cdot d_r^{0.35}
+  \]
+\end{itemize}
+
+\section{Tile Wrapping and Geometry}
+
+Tile wrapping with ESR is assumed to provided a 50\% increase in light
+response, based on the results from tests of Jim Freeman.  Most tests
+are performed with ESR wrapping, but any extrapolations to non-ESR
+cases should reduce the signal by a factor of $0.667$.
+
+The signal observed in the SiPM should scale by $1/\sqrt{A}$ where $A$
+is the area of the tile.  The reference tiles are squares which are
+3~cm on a side, therefore the scaling formula is
+\[
+G(A) = \frac{3\unit{cm}}{\sqrt{A}}
+\]
+
+\section{SiPM Signal and Noise}
+
+The baseline signal measurement for the projections is a measurement
+by Jim Freeman of a 3~cm by 3~cm square tile made of EJ200 and wrapped
+with ESR which produced 35 PE for a MIP passing through in testbeam.
+The tile was measured with a 1.3~mm by 1.3~mm SiPM with $50\unit{\mu
+  m}$ pixels and an overvoltage such that the PDE was 40\%.  Signal
+should be rescaled using the information in the table below.
+\[
+S(0) = \epsilon_{m} \cdot \frac{A_\mathrm{SiPM}}{1.69\unit{mm^2}} \cdot \frac{\mathrm{PDE}_\mathrm{SiPM}}{40\%}
+\]
+where $\epsilon_{m}$ represents the brightness of the scintillator
+relative to EJ200, $A_\mathrm{SiPM}$ is the area of the SiPM in
+\unit{mm^2}, and $\mathrm{PDE}_\mathrm{SiPM}$ is the photon detection
+efficiency for the SiPM at the relevant overvoltage.
+
+The noise in the SiPM is considered as the RMS of the dark count rate.
+Typical dark count rates are measured over 50~ns integration period
+and at a range of temperatures.  The formula used to convert
+measurements to a common operational point is:
+
+\[
+N=N_b \sqrt{\frac{15\unit{ns}}{50\unit{ns}}} \cdot \sqrt{A_\mathrm{SiPM}}{6.16\unit{mm^2}} \cdot 1.88^{(T-(-23.5^\circ\mathrm{C}))/10/2} \cdot \sqrt{\frac{F_\mathrm{1 MeV n}}{2\times 10^{13}\unit{n/cm^2}}\frac{L}{3000\unit{fb^{-1}}}}
+\]
+
+where $L$ is the integrated luminosity, $F_\mathrm{1 MeV n}$ is the
+1-MeV-equivalent neutron fluence for the point in question,
+$A_\mathrm{SiPM}$ is the area of the SiPM in \unit{mm^2}, and $N_b$ is
+the baseline measurement at 50~ns shaping time,
+$-23.5^\circ\mathrm{C}$ operational temperature, and $2\times
+10^{13}\unit{n/cm^2}$ fluence.  $N_b$ depends on overvoltage as given in the table below.
+
+\begin{table}[h]
+  \caption{Photon detection efficiency and noise for HE SiPMs at two overvoltages}
+  \centering
+  \begin{tabular}{|l|l|l|}\hline
+    & 2V & 3V \\ \hline
+    PDE & 20.5\% & 28.5\% \\
+    Noise (PE/50~ns) & 15 & 22 \\ \hline
+  \end{tabular}
+\end{table}
+  
+
+\end{document}
